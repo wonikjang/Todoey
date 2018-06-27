@@ -70,8 +70,12 @@ class FeedViewController: UIViewController,UICollectionViewDelegate, UICollectio
                                                     }
                                                     
                                                 }
-                                                
+                                                // Modification for Descending Order
+                                                // posst = posst.reverse() //1st option 
+                                                // self.post.append(posst)    
+                                                // self.posts.insert(posst, at: 0) // 2nd option 
                                                 self.posts.append(posst)
+                                                    
                                             }
                                             
                                             
