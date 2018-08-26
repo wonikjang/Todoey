@@ -24,45 +24,45 @@ class DrawViewController: UIViewController {
 
         
         
-//        // Upload image to 1. Storage & 2. Database with 1 image
-//
-//        let key = ref.child("draws").childByAutoId().key
-//        let tempImageRef = storage.child("draws/animal/tree.jpeg")
-//
-//        let image = UIImage(named: "tree.jpeg")
-//        let metadata = StorageMetadata()
-//        metadata.contentType = "image/jpeg"
-//
-//        let uploadTask = tempImageRef.putData(UIImageJPEGRepresentation(image!, 0.8)!, metadata: metadata, completion: { (data, error) in
-//
-//            // 1. Save in storage
-//            if error != nil {
-//                print(error?.localizedDescription)
-//
-//            }
-//            tempImageRef.downloadURL(completion: { (url, error) in
-//
-//                if let url = url {
-//
-//                    let drawsInfo = ["fileName" : "tree.jpeg",
-//                                     "pathToImage" : url.absoluteString]
-//
-//
-////                    let drawsImage = ["elephant.jpeg" : url.absoluteString ]
-//                    let drawsImage = ["\(key)" : drawsInfo ]
-//
-//                    ref.child("draws").child("animal").updateChildValues(drawsImage)
-//
-//                    self.dismiss(animated: true, completion: nil)
-//                } else {
-//                    print("url retrieve failed!")
-//                }
-//
-//            })
-//
-//
-//        })
-//        uploadTask.resume()
+        // Upload image to 1. Storage & 2. Database with 1 image
+
+        let key = ref.child("draws").childByAutoId().key
+        let tempImageRef = storage.child("draws/animal/tree.jpeg")
+
+        let image = UIImage(named: "tree.jpeg")
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+
+        let uploadTask = tempImageRef.putData(UIImageJPEGRepresentation(image!, 0.8)!, metadata: metadata, completion: { (data, error) in
+
+            // 1. Save in storage
+            if error != nil {
+                print(error?.localizedDescription)
+
+            }
+            tempImageRef.downloadURL(completion: { (url, error) in
+
+                if let url = url {
+
+                    let drawsInfo = ["fileName" : "tree.jpeg",
+                                     "pathToImage" : url.absoluteString]
+
+
+//                    let drawsImage = ["elephant.jpeg" : url.absoluteString ]
+                    let drawsImage = ["\(key)" : drawsInfo ]
+
+                    self.ref.child("draws").child("animal").updateChildValues(drawsImage)
+
+                    self.dismiss(animated: true, completion: nil)
+                } else {
+                    print("url retrieve failed!")
+                }
+
+            })
+
+
+        })
+        uploadTask.resume()
         
 
             fetchDraws()
