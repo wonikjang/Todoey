@@ -11,3 +11,7 @@ https://stackoverflow.com/questions/40251223/downloading-firebase-storage-files-
 
 https://stackoverflow.com/questions/24055146/how-to-find-nsdocumentdirectory-in-swift
 let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+
+
+<Load local file>
+https://stackoverflow.com/questions/42982666/loading-data-object-from-local-file-in-swift-3
