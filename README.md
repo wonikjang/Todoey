@@ -15,3 +15,7 @@ let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .use
 
 <Load local file>
 https://stackoverflow.com/questions/42982666/loading-data-object-from-local-file-in-swift-3
+
+
+<firebase -> From Database : select file by value >
+https://stackoverflow.com/questions/44625257/swift-select-from-firebase-by-child-value
