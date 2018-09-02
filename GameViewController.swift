@@ -11,6 +11,7 @@ import QuartzCore
 import SceneKit
 import SpriteKit
 import Firebase
+import FirebaseDatabase
 import FirebaseStorage
 
 
@@ -23,21 +24,17 @@ class GameViewController: UIViewController {
     
     //임시로 생성. 추후 서버와 연동시 수정
     var arr : [Int] = [0, 1, 2, 3, 4]
-    
-    
-    //firebase
-//    let storage = Storage.storage()
-//    var data = Data()
-//
-//    
+
 
     //선택한 색상이 아닌 다른 색상을 선택 시, haptic feedback 을 제공하기 위함
     let notification = UINotificationFeedbackGenerator()
     
     // Firebase : database & storage References
+//    let ref = Database.database().reference()
     
-    let ref = Database.database().reference()
     let storage = Storage.storage().reference(forURL: "gs://dpolypocket-f16f3.appspot.com")
+    
+    // SCNScene : Pre-Declaration
     
     var mainScene = SCNScene()
     
@@ -46,264 +43,234 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
 
         
-        // < Firebase 사용해서 dae파일 업로드 및 가져오기 >
+        // ==================== 0. Firebase 사용해서 dae파일 업로드
 
-        // 1. Storage에 dae 파일들을 Manually update - Presumed to be done !
-        // 2. Swift code로 database에 업로드
-        // 3. Swift에서 database, storage 접근해서 dae 파일 가져오기.
+        // 1. Datanase & Storage에 dae 파일들을 Update from a local file
+
+        // Create a reference to the file you want to upload
+//        let storageRef = storage.child("objects/animal/splitfaces.dae")
+//
+//        let key = ref.child("objects").child("animal").childByAutoId().key
+//
+//        if let localFile = Bundle.main.url(forResource: "art.scnassets/splitfaces", withExtension: "dae") {
+//            print("localFile is complete ")
+//            do {
+//                let data = try Data(contentsOf: localFile, options: .mappedIfSafe)
+//                print(" === data  === ")
+//
+//                // Upload the file to the path "images/rivers.jpg"
+//                let uploadTask = storageRef.putFile(from: localFile, metadata: nil) { metadata, error in
+//                    guard let metadata = metadata else {
+//                        print("Data is not stored into Storage")
+//                        return
+//                    }
+//                    // Metadata contains file metadata such as size, content-type.
+//                    // You can also access to download URL after upload.
+//                    storageRef.downloadURL { (url, error) in
+//
+//                        if let url = url {
+//
+//                            let drawsInfo = ["fileName" : "splitfaces.dae",
+//                                             "pathToImage" : url.absoluteString]
+//
+//                            let drawsImage = ["\(key)" : drawsInfo ]
+//
+//                            self.ref.child("objects").child("animal").updateChildValues(drawsImage)
+//
+//                            self.dismiss(animated: true, completion: nil)
+//                        } else {
+//                            print("url retrieve failed!")
+//                        }
+//
+//                    }
+//                }
+//                uploadTask.resume()
+//
+//
+//            } catch {
+//                print("local file is not loaded")
+//            }
+//        } else {
+//            print("file is not found! ")
+//        }
+
         
         
-        // < Start >
+        // =================== 1.Local device 에 저장 하는 방법
+
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let localURL = documentsURL.appendingPathComponent("splitfaces.dae")
+        print("localURL")
+        print(localURL)
         
-        // 2. Swift code로 database에 업로드
+        
+        // ============ 1st way -->  Database & Storage :" Access to Database and get storage path -->
 
-        let key = ref.child("objects").child("animal").childByAutoId().key
+        // 1.1. Trial 1 --> Success but not the way we want
+//        let ref = Database.database().reference()
+//        ref.child("objects").child("animal").queryOrderedByKey().observeSingleEvent(of: .value, with: { snapshot in
+        
+        // *** 1.2. Trial 2 --> This is it! Query database by Category & filename
+        
+        let ref = Database.database().reference().child("objects").child("animal")
+        let queryRef = ref.queryOrdered(byChild: "fileName").queryEqual(toValue: "splitfaces.dae")
+        
+        queryRef.observe(.childAdded, with: { (snapshot) in
 
-        // Data in memory
-        let data = Data()
-
-        let tempImageRef = storage.child("objects/animal/splitfaces.dae")
-
-        let uploadTask = tempImageRef.putData(data, metadata: nil, completion: { (data, error) in
-
-            if error != nil {
-                print(error?.localizedDescription)
-            }
-
-            tempImageRef.downloadURL(completion: { (url, error) in
-
-                if let url = url {
-
-                    let objectInfo = ["fileName" : "splitfaces.dae",
-                                     "pathToImage" : url.absoluteString]
-
-                    let drawsImage = ["\(key)" : objectInfo ]
-
-                    self.ref.child("objects").child("animal").updateChildValues(drawsImage)
-
-                    self.dismiss(animated: true, completion: nil)
+            
+            let draws = snapshot.value as! [String : NSDictionary]
+            
+            for (_, value) in draws { // value == AnyObject
+                
+                
+                
+                // Step 1 : Download file from Firebse storage to localURL
+                
+                if let pathToImage = value["pathToImage"] as? String{
                     
-                } else {
-                    print("url retrieve failed!")
+                    let storageRef = Storage.storage().reference(forURL: pathToImage)
+                    
+                    let downloadTask =  storageRef.write( toFile: localURL ) { (url, err)  in
+                        if let error = err{
+                            print("error while downloading your image :\(error)")
+                        }else{
+                            print("download complete")
+                        }
+                    }
+                    downloadTask.resume()
+                    
                 }
+                
+                // Step 2 : Get necessary information
+                
 
-            })
-
-
+            }
+            
         })
-        uploadTask.resume()
+        ref.removeAllObservers()
         
         
-        // 3. Swift에서 database --> storage 접근해서 dae 파일 가져오기.
-
-//        var mainScene = SCNScene()
-        
-//        var objectPath = Data()
-//        var objectPath = URL(string: "")
-        
-//        var mainScene = SCNScene()
+        // =========== 2nd way --> Only Storage access
         
         
-        fetchDraws()
-//        print(mainScene)
+        // Download to the local filesystem
         
-        
-        // create a new scene
-//        mainScene = SCNScene(named: "art.scnassets/splitfaces.dae")!
-        
-        let pathToObject = "https://firebasestorage.googleapis.com/v0/b/dpolypocket-f16f3.appspot.com/o/objects%2Fanimal%2Fsplitfaces.dae?alt=media&token=31a9a64d-b173-4417-bead-8691c0e113e0"
-        
-        print("pathToObject ======")
-        print(pathToObject)
-        
-        
-        let fileUrl = URL(fileURLWithPath: pathToObject)
-        print("fileUrl ======")
-        print(fileUrl)
-        do {
-            mainScene = try SCNScene(url: fileUrl)
-        } catch {
-            print("Unexpected error: \(error).")
-        }
-        
-//        mainScene = SCNScene(named: "https://firebasestorage.googleapis.com/v0/b/dpolypocket-f16f3.appspot.com/o/objects%2Fanimal%2Fsplitfaces.dae?alt=media&token=ecfb73f6-57a5-409c-8656-dcee7700b363")!
-        
-//        let a = "https://firebasestorage.googleapis.com/v0/b/dpolypocket-f16f3.appspot.com/o/objects%2Fanimal%2Fsplitfaces.dae?alt=media&token=ecfb73f6-57a5-409c-8656-dcee7700b363"
-//        print(a)
+//        let storageRef = self.storage.child("objects/animal/splitfaces.dae")
 //
-//        let url_a = URL(string: a)
+//        // Step 1 : Download from Firebse storage
 //
-//        do {
-//            mainScene = try SCNScene(url: url_a! )
-//        } catch {
-//            print("Unexpected error: \(error).")
+//        let downloadTask =  storageRef.write( toFile: localURL ) { (url, err)  in
+//            if let error = err{
+//                print("error while downloading your image :\(error)")
+//            }else{
+//                print("download complete")
+//            }
 //        }
         
         
         
+        // Step 2 : Show mainScene
+        
+        do{
+            mainScene = try SCNScene(url: localURL)
+        } catch {
+            print("mainScene is not imported correctly ")
+        }
+        
+        
+        
+
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        // ===================== SCNscene Area
+        
+        
+//        mainScene = SCNScene(named: "art.scnassets/splitfaces.dae")!
         mainScene.background.contents = UIImage(named: "art.scnassets/background.png")
-        
-        
+
+
         // create and add a camera to the scene
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
         mainScene.rootNode.addChildNode(cameraNode)
-        
+
         // place the camera
         cameraNode.position = SCNVector3(x: 1.7, y: 0, z: 8)
-        
+
         // create and add a light to the scene
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
         lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
         mainScene.rootNode.addChildNode(lightNode)
-        
+
         // create and add an ambient light to the scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
         ambientLightNode.light!.color = UIColor.darkGray
         mainScene.rootNode.addChildNode(ambientLightNode)
-        
+
         // retrieve the SCNView
         scnView = self.view as! SCNView
-        
+
         // set the scene to the view
         scnView.scene = mainScene
-        
+
         // allows the user to manipulate the camera
         scnView.allowsCameraControl = true
-        
+
         // configure the view
         scnView.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 1)
 //        scnView.backgroundColor = UIColor(red: 0.96, green: 0.56, blue: 0.69, alpha: 1.0)
-        
+
         scnView.overlaySKScene = ColorsOverlay(size: view.frame.size)
         scnView.overlaySKScene?.isUserInteractionEnabled = false
         
     }
     
-    func fetchDraws() {
-        
-        
-        let ref = Database.database().reference()
-        
-        ref.child("objects").child("animal").queryOrderedByKey().observeSingleEvent(of: .value, with: { snapshot in
-            
-            let draws = snapshot.value as! [String : NSDictionary]
-//            let draws = snapshot.value as! [String : AnyObject] // --> Anyobject can't be read : 에러 원인
-            
-            for (_, value) in draws { // value == AnyObject
-                
-                print("===value===")
-                print(value)
-                if let pathToImage = value["pathToImage"] as? String{
-                    print("pathToImage")
-                    print(pathToImage)
-                    
-//                    let storageRef = Storage.storage().reference(forURL: pathToImage)
-//                    storageRef.downloadURL { url, error in
-//
-//                        if error != nil {
-//                              print(error!.localizedDescription)
-//                        } else {
-//                            let fileUrl = URL(string: pathToImage)
-//                            print("=== fileURL ===")
-//                            print(fileUrl!)
-//                            do{
-//                                self.mainScene = SCNScene(named: "art.scnassets/splitfaces.dae")!
-////                                self.mainScene = try SCNScene(url: fileUrl! , options : nil)
-//
-//
-//                            } catch {
-//                                print("Unexpected error: \(error).")
-//
-//                            }
-//
-//                        }
 
-                    
-                    
-                    
-                    
-                    //                    // Fetch the download URL
-                    //                    storageRef.downloadURL { url, error in
-                    //                        if let error = error {
-                    //                            print(error)
-                    //                        } else {
-                    //                            print(url!)
-                    ////                            let objectPath = url!
-                    ////                            let mainScene = try SCNScene(url: url!)
-                    //
-                    //                      }
-                    //                    }
-                    
-                    //                    let storageRef = Storage.storage().reference(forURL: pathToImage)
-                    //
-                    //                    storageRef.getData(maxSize: 1*1024*1024) { (data, error) in
-                    //                        if error != nil {
-                    //                            print(error!.localizedDescription)
-                    //                        } else {
-                    //                            print(data)
-                    //
-                    //                            var objectPath = data
-                    //                        }
-                    //
-                    //                    }
-                    
-                        
-//                    }
-                }
-                
-            }
-            
-        })
-        ref.removeAllObservers()
-    }
     
-    
-    
-    
-    
-    
-    
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+
         let touch = touches.first!
         let changeColor = SCNMaterial()
-        
+
         notification.notificationOccurred(.warning)
 
-        
         changeColor.diffuse.contents = overlay.scrollView?.selectedColor
-        
-//         changeColor.diffuse.contents = UIImage(named: "art.scnassets/pattern3.png")?.flipsForRightToLeftLayoutDirection
-//         changeColor.locksAmbientWithDiffuse = true
-//        
-        
+
         if let hit = scnView.hitTest(touch.location(in: scnView), options: nil).first {
             selectedNode = hit.node
-//            hit.node.geometry?.materials = [changeColor]
             hit.node.geometry?.firstMaterial = changeColor
-        
+
             print(selectedNode)
-            
-            
-            
+
         }
 
     }
-    
+
     override var shouldAutorotate: Bool {
         return true
     }
-    
+
     override var prefersStatusBarHidden: Bool {
         return true
     }
-    
+
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return .allButUpsideDown
@@ -311,9 +278,14 @@ class GameViewController: UIViewController {
             return .all
         }
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
+    
+    
 }
+
+
+
