@@ -34,3 +34,20 @@ https://stackoverflow.com/questions/35540080/firebase-indexon-security-rules-not
 
         }
     }
+    
+    
+    
+ {
+    "rules": {
+         ".read": true,
+         ".write": true,    
+           
+         "objects": {
+           "animal":  {
+
+             ".indexOn": "fileName"
+           						   	}		
+         					 	  }
+         						
+        		}
+}
