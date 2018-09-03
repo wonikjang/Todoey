@@ -22,3 +22,15 @@ https://stackoverflow.com/questions/44625257/swift-select-from-firebase-by-child
   
  <Firebase/Database][I-RDB034028] Using an unspecified index. Your data will be downloaded and filtered on the client. Consider adding ".indexOn": "fileName">
  https://stackoverflow.com/questions/46372756/firebase-error-consider-adding-indexon?rq=1
+https://stackoverflow.com/questions/35540080/firebase-indexon-security-rules-not-working
+
+ {
+    "rules": {
+         ".read": true,
+         ".write": true,    
+         "Data" : {
+             ".indexOn": "fileName/animal"
+         }
+
+        }
+    }
