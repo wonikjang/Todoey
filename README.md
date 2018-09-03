@@ -19,3 +19,6 @@ https://stackoverflow.com/questions/42982666/loading-data-object-from-local-file
 
 <firebase -> From Database : select file by value >
 https://stackoverflow.com/questions/44625257/swift-select-from-firebase-by-child-value
+  
+ <Firebase/Database][I-RDB034028] Using an unspecified index. Your data will be downloaded and filtered on the client. Consider adding ".indexOn": "fileName">
+ https://stackoverflow.com/questions/46372756/firebase-error-consider-adding-indexon?rq=1
