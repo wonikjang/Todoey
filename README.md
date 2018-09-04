@@ -55,3 +55,5 @@ https://stackoverflow.com/questions/35540080/firebase-indexon-security-rules-not
 <Firebase Storage & URLSession - Download >
 https://mrgott.com/swift-programing/32-firebase-storage-how-to-download-files-using-firebase-3-sdk-with-swift-3-in-xcode-8
 
+<Save data Permanantly>
+https://medium.com/aviabird/the-one-with-userdefaults-aab2c2a7e170
