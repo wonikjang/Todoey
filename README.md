@@ -57,3 +57,6 @@ https://mrgott.com/swift-programing/32-firebase-storage-how-to-download-files-us
 
 <Save data Permanantly>
 https://medium.com/aviabird/the-one-with-userdefaults-aab2c2a7e170
+  
+<Save file >
+https://medium.com/@ankitbansal806/save-and-get-image-from-document-directory-in-swift-5c1280ec17f5
