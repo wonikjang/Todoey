@@ -60,3 +60,6 @@ https://medium.com/aviabird/the-one-with-userdefaults-aab2c2a7e170
   
 <Save file >
 https://medium.com/@ankitbansal806/save-and-get-image-from-document-directory-in-swift-5c1280ec17f5
+  
+ <Firebase Query>
+  https://stackoverflow.com/questions/40656589/firebase-query-if-child-of-child-contains-a-value
