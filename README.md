@@ -63,4 +63,8 @@ https://medium.com/@ankitbansal806/save-and-get-image-from-document-directory-in
   
  <Firebase Query>
   https://stackoverflow.com/questions/40656589/firebase-query-if-child-of-child-contains-a-value
+  
 https://stackoverflow.com/questions/41038228/query-where-in-firebase-swift-3
+
+
+http://swiftdeveloperblog.com/code-examples/download-file-from-a-remote-url-in-swift/
