@@ -1,10 +1,9 @@
 # Todoey
 
 
-
+# 
 <Firebase Anonymous Authentication application>
-  
-  
+    
 https://stackoverflow.com/questions/19897994/creating-temporary-anonymous-users-in-firebase
   
   
