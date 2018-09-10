@@ -1,12 +1,7 @@
 # Todoey
 
 
-# 
-<Firebase Anonymous Authentication application>
-    
-https://stackoverflow.com/questions/19897994/creating-temporary-anonymous-users-in-firebase
-  
-  
+
 
 https://code-examples.net/en/q/23c5e73
 
@@ -76,3 +71,13 @@ https://stackoverflow.com/questions/41038228/query-where-in-firebase-swift-3
 
 
 http://swiftdeveloperblog.com/code-examples/download-file-from-a-remote-url-in-swift/
+
+
+
+<Firebase Anonymous Authentication application>
+    
+https://stackoverflow.com/questions/19897994/creating-temporary-anonymous-users-in-firebase
+  
+  
+  
+  
