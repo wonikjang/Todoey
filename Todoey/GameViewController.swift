@@ -15,6 +15,9 @@ class GameViewController: UIViewController, UINavigationControllerDelegate {
     
     var data = [String]()
     
+    // AppDelegate에서 Firebase에 접근해 가져온 데이터를 불러오기 위한 delegate
+    let delegate = UIApplication.shared.delegate as! AppDelegate
+    
     var scnView:MainView {return view as! MainView}
     
     private var objectNode: SCNNode?
@@ -81,6 +84,43 @@ class GameViewController: UIViewController, UINavigationControllerDelegate {
         // 1.0 Firebase Database/Storage 로 작업중인 파일 (3DWork,back, 2DWork,dict) 을 upload --> Storage로 부터 Local Document로 다운
 
         // 1.1 FireBase
+        // uid/fName/Done, 3Dwork, 2DWork,dict 
+       userId = delegate.uidString
+
+       let userFnameRef = Database.database().reference().child("users").child("\(userId)")
+       
+       let storage = Storage.storage().reference(forURL: "gs://polypocketfirebase.appspot.com")
+       let workRef = storage.child("users").child("\(userId)")
+
+       // for loop  
+        
+       let uploadTask = workRef.putData( data!, metadata: nil, completion: { (metadata, error) in
+            if error != nil {
+                print(error?.localizedDescription)
+                return
+            }
+            
+            workRef.downloadURL(completion: { (url, error) in
+                if let url = url {
+                    let feed = ["userID" : uid,
+                                "pathToImage" : url.absoluteString,
+                                "likes" : 0 ,
+                                "author" : Auth.auth().currentUser!.displayName!,
+                                "postID" : key ] as [String : Any]
+                    
+                    let postFeed = ["\(key)" : feed]
+                    
+                    ref.child("posts").updateChildValues(postFeed)
+                    AppDelegate.instance().dismissActivityIndicator()
+                    
+                    self.dismiss(animated: true, completion: nil)
+                }
+            })
+
+            
+        })
+        uploadTask.resume()
+
         
         
 
